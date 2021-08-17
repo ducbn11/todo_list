@@ -116,7 +116,7 @@ class TodoListController extends Controller
         if($id) {
             $todo = $this->todoListRepository->getFirstTodoItemOfUser($user->id, $id);
         }
-        if(!$todo) {
+        if($id && !$todo) {
             return redirect()->route('todo_list.index');
         }
         return view('todo.index', compact('todo'));
