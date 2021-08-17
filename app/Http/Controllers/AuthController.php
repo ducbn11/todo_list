@@ -55,10 +55,10 @@ class AuthController extends Controller
 
             return redirect()->back()->withInput()->with('message', "Login fail!");
         } catch (ValidationException $e) {
-            Log::info("login ValidationException " . $e->getMessage());
+            Log::error("login ValidationException " . $e);
             return redirect()->back()->withInput()->withErrors($e->errors());
         } catch (Exception $e) {
-            Log::info("login Exception " . $e->getMessage());
+            Log::error("login Exception " . $e);
             return redirect()->back()->withInput()->with('message', "Login fail!");
         }
         
@@ -115,10 +115,10 @@ class AuthController extends Controller
 
             return redirect()->back()->withInput()->with('message', "Register fail!");
         } catch (ValidationException $e) {
-            Log::info("register ValidationException " . $e->getMessage());
+            Log::error("register ValidationException " . $e);
             return redirect()->back()->withInput()->withErrors($e->errors());
         } catch (Exception $e) {
-            Log::info("register Exception " . $e->getMessage());
+            Log::error("register Exception " . $e);
             return redirect()->back()->withInput()->with('message', "Register fail!");
         }
     }

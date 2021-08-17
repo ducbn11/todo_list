@@ -46,4 +46,18 @@ class TodoListRepository extends BaseRepository implements TodoListRepositoryInt
 
         return $todoList;
     }
+
+    /**
+     * get first todo item of user
+     *
+     * @param $userId, $id
+     * @return \App\Model\TodoItem
+     */
+    public function getFirstTodoItemOfUser($userId, $id) {
+        $dataFilter = [];
+        $dataFilter['id'] = $id;
+        $dataFilter['user_id'] = $userId;
+
+        return $this->filter($dataFilter)->first();
+    }
 }
