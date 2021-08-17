@@ -134,6 +134,8 @@ return [
     |
     */
 
+    'pagination_limit' => 10,
+
     'providers' => [
 
         /*

@@ -13,7 +13,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(
+            \App\Repositories\Users\UserRepositoryInterface::class,
+            \App\Repositories\Users\UserRepository::class,
+        );
+        $this->app->singleton(
+            \App\Repositories\TodoList\TodoListRepositoryInterface::class,
+            \App\Repositories\TodoList\TodoListRepository::class
+        );
     }
 
     /**

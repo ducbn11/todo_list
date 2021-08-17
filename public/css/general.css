@@ -1,0 +1,50 @@
+.container-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 50px 0 30px;
+}
+.form-container {
+    border: 1px solid #000;
+    border-radius: 10px;
+    padding: 15px;
+}
+.header-container {
+    height: 50px;
+    background-color: #000;
+    color: #fff;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 20px;
+}
+.header-container-item {
+    display: flex;
+    align-items: center;
+}
+.header-container-item img {
+    width: 35px;
+    margin-right: 10px;
+}
+.content-container {
+    padding: 20px;
+}
+.content-title {
+    font-size: 30px;
+    font-weight: bold;
+}
+.content-fitler {
+    border: 1px solid #000;
+    padding: 20px;
+    position: relative
+}
+.filter-title {
+    position: absolute;
+    top: -25px;
+    left: 20px;
+    font-size: 18px;
+}
+.my-active span{
+    background-color: #5cb85c !important;
+    color: white !important;
+    border-color: #5cb85c !important;
+}
