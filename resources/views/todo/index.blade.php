@@ -65,34 +65,33 @@
                 success: function(data) {
                     if(data.status == 1) {
                         $('#form_save_todo_item').submit();
-                    } else {
-                        let errors = data.errors;
-                        if(errors['due_date']) {
-                            let html = '';
-                            for(let i = 0; i < errors['due_date'].length; i++) {
-                                html += '<small id="due_date_help" class="form-text text-muted">' + errors['due_date'][i]  + '</small>';
-                            }
-                            $('#due_date_help').html(html);
-                        }
-                        if(errors['title']) {
-                            let html = '';
-                            for(let i = 0; i < errors['title'].length; i++) {
-                                html += '<small id="title_help" class="form-text text-muted">' + errors['title'][i]  + '</small>';
-                            }
-                            $('#title_help').html(html);
-                        }
-                        if(errors['status']) {
-                            let html = '';
-                            for(let i = 0; i < errors['status'].length; i++) {
-                                html += '<small id="status_help" class="form-text text-muted">' + errors['status'][i]  + '</small>';
-                            }
-                            $('#status_help').html(html);
-                        }
                     }
                 },
                 error: function(error) {
                     console.log("updateStatus");
                     console.log(error);
+                    let errors = error.responseJSON.errors;
+                    if(errors['due_date']) {
+                        let html = '';
+                        for(let i = 0; i < errors['due_date'].length; i++) {
+                            html += '<small id="due_date_help" class="form-text text-muted">' + errors['due_date'][i]  + '</small>';
+                        }
+                        $('#due_date_help').html(html);
+                    }
+                    if(errors['title']) {
+                        let html = '';
+                        for(let i = 0; i < errors['title'].length; i++) {
+                            html += '<small id="title_help" class="form-text text-muted">' + errors['title'][i]  + '</small>';
+                        }
+                        $('#title_help').html(html);
+                    }
+                    if(errors['status']) {
+                        let html = '';
+                        for(let i = 0; i < errors['status'].length; i++) {
+                            html += '<small id="status_help" class="form-text text-muted">' + errors['status'][i]  + '</small>';
+                        }
+                        $('#status_help').html(html);
+                    }
                 }
             });
         });

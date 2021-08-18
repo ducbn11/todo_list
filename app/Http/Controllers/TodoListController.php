@@ -9,6 +9,9 @@ use Auth;
 use Log;
 use App\Models\User;
 use App\Repositories\TodoList\TodoListRepositoryInterface;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\UpdateTodoStatusRequest;
+use App\Http\Requests\CreateOrEditTodoRequest;
 
 class TodoListController extends Controller
 {
@@ -79,10 +82,10 @@ class TodoListController extends Controller
     /**
      * update todo status
      *
-     * @param Illuminate\Http\Request
+     * @param Illuminate\Http\Requests\UpdateTodoStatusRequest
      * @return Json
      */
-    public function updateTodoStatus(Request $request) {
+    public function updateTodoStatus(UpdateTodoStatusRequest $request) {
         $id = $request->input('id');
         $status = $request->input('status');
         $user = Auth::user();
@@ -125,57 +128,40 @@ class TodoListController extends Controller
     /**
      * validate before save todo item
      *
-     * @param Illuminate\Http\Request
+     * @param Illuminate\Http\Requests\CreateOrEditTodoRequest
      * @return Json
      */
-    public function validateSaveTodoItem(Request $request) {
-        try {
-            $data = $request->all();
-            $this->validate($request, [
-                'title' => 'required',
-                'due_date' => 'required',
-                'status' => 'required',
-            ]);
-
-            return response()->json([
-                'status' => 1
-            ]);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'status' => 0,
-                'errors' => $e->errors(),
-            ]);
-        }
+    public function validateSaveTodoItem(CreateOrEditTodoRequest $request) {
+        return response()->json([
+            'status' => 1,
+        ]);
     }
 
     /**
      * handle save todo item
      *
-     * @param Illuminate\Http\Request
+     * @param Illuminate\Http\Requests\CreateOrEditTodoRequest
      * @return \Illuminate\View\View
      */
-    public function saveTodoItem(Request $request) {
-        try {
-            $data = $request->all();
+    public function saveTodoItem(CreateOrEditTodoRequest $request) {
+        $data = $request->all();
 
-            $user = Auth::user();
-            $data['user_id'] = $user->id;
-            unset($data['id']);
+        $user = Auth::user();
+        $data['user_id'] = $user->id;
+        unset($data['id']);
 
-            $id = $request->input('id', '');
-            if($id) {
-                if($this->todoListRepository->getFirstTodoItemOfUser($user->id, $id)) {
-                    $this->todoListRepository->update($id, $data);
-                }
-            } else {
-                $this->todoListRepository->create($data);
+        $id = $request->input('id', '');
+        if($id) {
+            if($this->todoListRepository->getFirstTodoItemOfUser($user->id, $id)) {
+                $this->todoListRepository->update($id, $data);
+                return redirect()->route('todo_list.index')->with('message', "Save successfully!");
             }
-
-            return redirect()->route('todo_list.index');
-        } catch (Exception $e) {
-            Log::error("saveTodoItem Exception " . $e);
-            return redirect()->back()->with('message', "Save fail!");
+        } else {
+            $this->todoListRepository->create($data);
+            return redirect()->route('todo_list.index')->with('message', "Save successfully!");
         }
+
+        return redirect()->route('todo_list.index')->with('message', "Save fail!");
     }
 
     /**
@@ -185,20 +171,15 @@ class TodoListController extends Controller
      * @return \Illuminate\View\View
      */
     public function deleteTodoItem(Request $request) {
-        try {
-            $id = $request->id;
-            $user = Auth::user();
-            if($id) {
-                if($this->todoListRepository->getFirstTodoItemOfUser($user->id, $id)) {
-                    $this->todoListRepository->delete($id);
-                    return redirect()->back()->with('message', "Delete successfully!");
-                }
+        $id = $request->id;
+        $user = Auth::user();
+        if($id) {
+            if($this->todoListRepository->getFirstTodoItemOfUser($user->id, $id)) {
+                $this->todoListRepository->delete($id);
+                return redirect()->back()->with('message', "Delete successfully!");
             }
-
-            return redirect()->back()->with('message', "Delete fail!");
-        } catch (Exception $e) {
-            Log::error("deleteTodoItem Exception " . $e);
-            return redirect()->back()->with('message', "Delete fail!");
         }
+
+        return redirect()->back()->with('message', "Delete fail!");
     }
 }

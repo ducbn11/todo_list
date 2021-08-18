@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Auth;
 use Log;
 use App\Models\User;
 use App\Repositories\Users\UserRepositoryInterface;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\LoginRequest;
 
 class AuthController extends Controller
 {
@@ -32,36 +34,23 @@ class AuthController extends Controller
     /**
      * handle login
      *
-     * @param Illuminate\Http\Request
+     * @param App\Http\Requests\LoginRequest
      * @return \Illuminate\View\View
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        try {
-            $data = $request->all();
-            $this->validate($request, [
-                'name' => 'required|min:6',
-                'password' => 'required|min:6',
-            ]);
-            $loginData = [];
-            $loginData['name'] = data_get($data, 'name', '');
-            $loginData['password'] = data_get($data, 'password', '');
+        $data = $request->all();
+        $loginData = [];
+        $loginData['name'] = data_get($data, 'name', '');
+        $loginData['password'] = data_get($data, 'password', '');
 
-            $login = Auth::attempt($loginData);
+        $login = Auth::attempt($loginData);
 
-            if($login) {
-                return redirect()->route('todo_list.index');
-            }
-
-            return redirect()->back()->withInput()->with('message', "Login fail!");
-        } catch (ValidationException $e) {
-            Log::error("login ValidationException " . $e);
-            return redirect()->back()->withInput()->withErrors($e->errors());
-        } catch (Exception $e) {
-            Log::error("login Exception " . $e);
-            return redirect()->back()->withInput()->with('message', "Login fail!");
+        if($login) {
+            return redirect()->route('todo_list.index');
         }
-        
+
+        return redirect()->back()->withInput()->with('message', "Login fail!");
     }
 
     /**
@@ -89,37 +78,23 @@ class AuthController extends Controller
     /**
      * register
      *
-     * @param Illuminate\Http\Request
+     * @param App\Http\Requests\RegisterRequest
      * @return \Illuminate\View\View
      */
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        try {
-            $data = $request->all();
-            $this->validate($request, [
-                'email' => 'required|email|unique:users',
-                'name' => 'required|unique:users|min:6',
-                'password' => 'required|min:6|required_with:password_confirmation|same:password_confirmation',
-                'password_confirmation' => 'required|min:6',
-            ]);
-            $dataSave = [];
-            $dataSave['email'] = data_get($data, 'email', '');
-            $dataSave['name'] = data_get($data, 'name', '');
-            $dataSave['password'] = bcrypt(data_get($data, 'password', ''));
-            $user = $this->userRepository->create($dataSave);
+        $data = $request->all();
+        $dataSave = [];
+        $dataSave['email'] = data_get($data, 'email', '');
+        $dataSave['name'] = data_get($data, 'name', '');
+        $dataSave['password'] = bcrypt(data_get($data, 'password', ''));
+        $user = $this->userRepository->create($dataSave);
 
-            if($user) {
-                Auth::login($user);
-                return redirect()->route('todo_list.index');
-            }
-
-            return redirect()->back()->withInput()->with('message', "Register fail!");
-        } catch (ValidationException $e) {
-            Log::error("register ValidationException " . $e);
-            return redirect()->back()->withInput()->withErrors($e->errors());
-        } catch (Exception $e) {
-            Log::error("register Exception " . $e);
-            return redirect()->back()->withInput()->with('message', "Register fail!");
+        if($user) {
+            Auth::login($user);
+            return redirect()->route('todo_list.index');
         }
+
+        return redirect()->back()->withInput()->with('message', "Register fail!");
     }
 }
